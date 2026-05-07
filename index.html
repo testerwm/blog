@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leo's Blog</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-role="public">
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="#home" aria-label="返回首页">Leo's Blog</a>
+        <nav class="nav" aria-label="主导航">
+          <a href="#home">文章</a>
+          <a href="https://x.com/Davie_ming" target="_blank" rel="noopener noreferrer">X</a>
+          <a href="https://github.com/testerwm" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换深浅色主题">暗色</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="wrap hero" id="home">
+        <div>
+          <h1>Leo's Blog</h1>
+        </div>
+      </section>
+
+      <section class="wrap layout">
+        <aside class="post-list-panel" aria-label="文章列表">
+          <div class="panel-head">
+            <h2>文章</h2>
+          </div>
+          <div class="post-list" id="postList"></div>
+        </aside>
+
+        <article class="reader" id="reader">
+          <div class="empty-state">
+            <h2>还没有文章</h2>
+            <p>作者还没有发布内容。</p>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">Leo's Blog</div>
+    </footer>
+
+    <template id="commentTemplate">
+      <li class="comment">
+        <div class="comment-card">
+          <div class="comment-meta"></div>
+          <p class="comment-body"></p>
+          <button class="reply-button" type="button">回复</button>
+          <form class="reply-form hidden">
+            <input type="text" maxlength="24" placeholder="昵称，可留空匿名" />
+            <textarea rows="3" maxlength="400" placeholder="写下你的回复" required></textarea>
+            <div>
+              <button class="primary-button small" type="submit">提交</button>
+              <button class="ghost-button small cancel-reply" type="button">取消</button>
+            </div>
+          </form>
+        </div>
+        <ol class="comment-children"></ol>
+      </li>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

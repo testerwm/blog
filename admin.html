@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leo's Blog 创作者后台</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-role="creator">
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="index.html" aria-label="返回博客">Leo's Blog</a>
+        <nav class="nav" aria-label="后台导航">
+          <a href="index.html">公开页</a>
+          <a href="#editor">发布</a>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换深浅色主题">暗色</button>
+          <button class="nav-button hidden" id="logoutButton" type="button">退出</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="wrap auth-section" id="authGate">
+        <div class="section-title">
+          <p class="eyebrow">Login</p>
+          <h2>创作者登录</h2>
+        </div>
+        <form class="editor-form auth-form" id="loginForm">
+          <label>
+            <span>Email</span>
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="你的 Supabase 登录邮箱" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input
+              id="loginPassword"
+              type="password"
+              autocomplete="current-password"
+              placeholder="你的登录密码"
+              required
+            />
+          </label>
+          <button class="primary-button" type="submit">登录</button>
+          <p class="post-meta" id="authMessage"></p>
+        </form>
+      </section>
+
+      <section class="wrap hero compact-hero creator-only hidden" id="home">
+        <div>
+          <p class="eyebrow">Creator</p>
+          <h1>创作者后台</h1>
+        </div>
+        <p class="hero-copy">这里是作者发布内容的地方，普通访客不需要看到这个页面。</p>
+      </section>
+
+      <section class="wrap layout creator-only hidden">
+        <aside class="post-list-panel" aria-label="文章列表">
+          <div class="panel-head">
+            <h2>文章</h2>
+            <button class="text-button" id="seedButton" type="button">载入示例</button>
+          </div>
+          <div class="post-list" id="postList"></div>
+        </aside>
+
+        <article class="reader" id="reader">
+          <div class="empty-state">
+            <h2>还没有文章</h2>
+            <p>从下方发布第一篇内容。</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="wrap editor-section creator-only hidden" id="editor">
+        <div class="section-title">
+          <p class="eyebrow">Publish</p>
+          <h2>发布内容</h2>
+        </div>
+
+        <form class="editor-form" id="postForm">
+          <label>
+            <span>标题</span>
+            <input id="postTitle" type="text" maxlength="80" placeholder="写一个清楚的标题" required />
+          </label>
+          <label>
+            <span>摘要</span>
+            <textarea id="postExcerpt" rows="3" maxlength="180" placeholder="用一两句话说明这篇文章"></textarea>
+          </label>
+
+          <div class="rich-editor">
+            <div class="toolbar" aria-label="富文本工具栏">
+              <button type="button" data-command="bold" aria-label="加粗"><strong>B</strong></button>
+              <button type="button" data-command="italic" aria-label="斜体"><em>I</em></button>
+              <button type="button" data-command="formatBlock" data-value="h2">H2</button>
+              <button type="button" data-command="formatBlock" data-value="blockquote">“”</button>
+              <button type="button" data-command="insertUnorderedList">•</button>
+              <button type="button" data-command="createLink">链接</button>
+              <button type="button" id="clearFormatButton">清除格式</button>
+            </div>
+            <div
+              class="editable"
+              id="postContent"
+              contenteditable="true"
+              role="textbox"
+              aria-multiline="true"
+              data-placeholder="在这里写正文。可以加粗、斜体、标题、引用、列表和链接。"
+            ></div>
+          </div>
+
+          <div class="form-actions">
+            <button class="primary-button" type="submit">发布文章</button>
+            <button class="ghost-button" id="resetButton" type="button">清空</button>
+          </div>
+          <p class="post-meta" id="publishMessage"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">Leo's Blog · creator console</div>
+    </footer>
+
+    <template id="commentTemplate">
+      <li class="comment">
+        <div class="comment-card">
+          <div class="comment-meta"></div>
+          <p class="comment-body"></p>
+          <button class="reply-button" type="button">回复</button>
+          <form class="reply-form hidden">
+            <input type="text" maxlength="24" placeholder="昵称，可留空匿名" />
+            <textarea rows="3" maxlength="400" placeholder="写下你的回复" required></textarea>
+            <div>
+              <button class="primary-button small" type="submit">提交</button>
+              <button class="ghost-button small cancel-reply" type="button">取消</button>
+            </div>
+          </form>
+        </div>
+        <ol class="comment-children"></ol>
+      </li>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
