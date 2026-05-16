@@ -711,6 +711,51 @@ textarea:focus,
   gap: 8px;
 }
 
+.back-to-top {
+  position: fixed;
+  right: max(18px, calc((100vw - 1120px) / 2 + 18px));
+  bottom: 24px;
+  z-index: 12;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--accent-strong);
+  box-shadow: 0 12px 30px rgba(31, 28, 23, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.back-to-top svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .hidden {
   display: none;
 }
@@ -812,6 +857,13 @@ textarea:focus,
   .theme-toggle {
     width: 38px;
     height: 38px;
+  }
+
+  .back-to-top {
+    right: 12px;
+    bottom: 18px;
+    width: 40px;
+    height: 40px;
   }
 
   .post-list-panel,

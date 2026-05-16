@@ -19,6 +19,7 @@ const subscribeForm = document.querySelector("#subscribeForm");
 const closeSubscribeButton = document.querySelector("#closeSubscribeButton");
 const subscriberEmail = document.querySelector("#subscriberEmail");
 const subscribeMessage = document.querySelector("#subscribeMessage");
+const backToTopButton = document.querySelector("#backToTopButton");
 const creatorOnlyNodes = document.querySelectorAll(".creator-only");
 const isCreator = document.body.dataset.role === "creator";
 const config = window.LEO_BLOG_CONFIG ?? {};
@@ -510,6 +511,21 @@ function bindScrollHandlers() {
     },
     { passive: true },
   );
+}
+
+function bindBackToTop() {
+  if (!backToTopButton) return;
+
+  const updateBackToTop = () => {
+    backToTopButton.classList.toggle("visible", window.scrollY > 360);
+  };
+
+  backToTopButton.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  window.addEventListener("scroll", updateBackToTop, { passive: true });
+  updateBackToTop();
 }
 
 async function maybeLoadMorePosts() {
@@ -1049,6 +1065,7 @@ function bindAuth() {
 async function init() {
   initTheme();
   bindScrollHandlers();
+  bindBackToTop();
 
   if (!hasSupabaseConfig || !db) {
     showSetupState();
