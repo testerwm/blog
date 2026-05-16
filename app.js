@@ -486,9 +486,44 @@ function setupPostCollapse(article) {
   const button = article.querySelector(".post-collapse-button");
   if (!content || !button) return;
 
-  const updateCollapseState = () => {
+  const getCollapsedHeight = () => {
+    const contentTop = content.getBoundingClientRect().top;
+    const lineRects = [];
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+
+    while (walker.nextNode()) {
+      const textNode = walker.currentNode;
+      if (!textNode.textContent.trim()) continue;
+
+      const range = document.createRange();
+      range.selectNodeContents(textNode);
+      lineRects.push(...range.getClientRects());
+      range.detach();
+    }
+
+    const lines = [...lineRects]
+      .filter((rect) => rect.width > 0 && rect.height > 0)
+      .sort((first, second) => first.top - second.top)
+      .reduce((items, rect) => {
+        const existing = items.find((item) => Math.abs(item.top - rect.top) < 2);
+        if (existing) {
+          existing.bottom = Math.max(existing.bottom, rect.bottom);
+          return items;
+        }
+        items.push({ top: rect.top, bottom: rect.bottom });
+        return items;
+      }, []);
+
+    if (lines.length >= COLLAPSED_LINE_COUNT) {
+      return Math.ceil(lines[COLLAPSED_LINE_COUNT - 1].bottom - contentTop);
+    }
+
     const lineHeight = Number.parseFloat(getComputedStyle(content).lineHeight) || 24;
-    const collapsedHeight = lineHeight * COLLAPSED_LINE_COUNT;
+    return Math.ceil(lineHeight * COLLAPSED_LINE_COUNT);
+  };
+
+  const updateCollapseState = () => {
+    const collapsedHeight = getCollapsedHeight();
     const shouldCollapse = content.scrollHeight > collapsedHeight + 2;
 
     content.style.setProperty("--collapsed-content-height", `${collapsedHeight}px`);
