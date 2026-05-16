@@ -491,7 +491,7 @@ function setupPostCollapse(article) {
   const button = article.querySelector(".post-collapse-button");
   if (!content || !button) return;
 
-  const getCollapsedHeight = () => {
+  const getCollapseMetrics = () => {
     const contentTop = content.getBoundingClientRect().top;
     const lineRects = [];
     const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
@@ -520,16 +520,23 @@ function setupPostCollapse(article) {
       }, []);
 
     if (lines.length >= COLLAPSED_LINE_COUNT) {
-      return Math.ceil(lines[COLLAPSED_LINE_COUNT - 1].bottom - contentTop);
+      return {
+        collapsedHeight: Math.ceil(lines[COLLAPSED_LINE_COUNT - 1].bottom - contentTop),
+        lineCount: lines.length,
+      };
     }
 
     const lineHeight = Number.parseFloat(getComputedStyle(content).lineHeight) || 24;
-    return Math.ceil(lineHeight * COLLAPSED_LINE_COUNT);
+    return {
+      collapsedHeight: Math.ceil(lineHeight * COLLAPSED_LINE_COUNT),
+      lineCount: lines.length,
+    };
   };
 
   const updateCollapseState = () => {
-    const collapsedHeight = getCollapsedHeight();
-    const shouldCollapse = content.scrollHeight > collapsedHeight + 2;
+    const { collapsedHeight, lineCount } = getCollapseMetrics();
+    const shouldCollapse =
+      lineCount > COLLAPSED_LINE_COUNT || (lineCount === 0 && content.scrollHeight > collapsedHeight + 2);
 
     content.style.setProperty("--collapsed-content-height", `${collapsedHeight}px`);
     content.classList.toggle("is-collapsible", shouldCollapse);
