@@ -27,6 +27,7 @@ const hasSupabaseConfig = Boolean(config.supabaseUrl && config.supabaseAnonKey);
 const db = hasSupabaseConfig ? window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey) : null;
 const POSTS_PAGE_SIZE = 20;
 const OUTLINE_LIMIT = 5;
+const COLLAPSED_LINE_COUNT = 3;
 
 let posts = [];
 let activePostId = null;
@@ -442,6 +443,7 @@ function renderReader() {
   posts.forEach((post) => {
     const article = reader.querySelector(`#post-${post.id}`);
     article.querySelector(".post-content").innerHTML = post.content;
+    setupPostCollapse(article);
 
     article.querySelector(".delete-post-button")?.addEventListener("click", async () => {
       await deletePost(post.id, post.title);
@@ -474,8 +476,39 @@ function renderPostArticle(post) {
         }
       </header>
       <div class="post-content"></div>
+      <button class="text-button post-collapse-button hidden" type="button" aria-expanded="false">展开</button>
     </section>
   `;
+}
+
+function setupPostCollapse(article) {
+  const content = article.querySelector(".post-content");
+  const button = article.querySelector(".post-collapse-button");
+  if (!content || !button) return;
+
+  const updateCollapseState = () => {
+    const lineHeight = Number.parseFloat(getComputedStyle(content).lineHeight) || 24;
+    const collapsedHeight = lineHeight * COLLAPSED_LINE_COUNT;
+    const shouldCollapse = content.scrollHeight > collapsedHeight + 2;
+
+    content.style.setProperty("--collapsed-content-height", `${collapsedHeight}px`);
+    content.classList.toggle("is-collapsible", shouldCollapse);
+    content.classList.toggle("expanded", false);
+    button.classList.toggle("hidden", !shouldCollapse);
+    button.textContent = "展开";
+    button.setAttribute("aria-expanded", "false");
+  };
+
+  updateCollapseState();
+  content.querySelectorAll("img").forEach((image) => {
+    if (!image.complete) image.addEventListener("load", updateCollapseState, { once: true });
+  });
+
+  button.addEventListener("click", () => {
+    const isExpanded = content.classList.toggle("expanded");
+    button.textContent = isExpanded ? "收起" : "展开";
+    button.setAttribute("aria-expanded", String(isExpanded));
+  });
 }
 
 function updateActivePostFromScroll() {

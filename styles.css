@@ -416,7 +416,39 @@ h3 {
 }
 
 .post-content {
+  position: relative;
   font-size: 1.04rem;
+}
+
+.post-content.is-collapsible {
+  max-height: var(--collapsed-content-height);
+  overflow: hidden;
+}
+
+.post-content.is-collapsible::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2.2em;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--paper));
+}
+
+.post-content.is-collapsible.expanded {
+  max-height: none;
+  overflow: visible;
+}
+
+.post-content.is-collapsible.expanded::after {
+  display: none;
+}
+
+.post-collapse-button {
+  margin: 10px 0 0;
+  padding-left: 0;
+  font-weight: 650;
 }
 
 .post-content,
