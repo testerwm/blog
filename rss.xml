@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Leo Wang's Blog</title>
+    <link>https://blog-two-hazel-16.vercel.app/</link>
+    <description>Leo Wang's Blog 的文章订阅。</description>
+    <language>zh-CN</language>
+  </channel>
+</rss>

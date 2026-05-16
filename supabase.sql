@@ -16,19 +16,20 @@ create table if not exists public.posts (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.comments (
+create table if not exists public.email_subscribers (
   id uuid primary key default gen_random_uuid(),
-  post_id uuid not null references public.posts(id) on delete cascade,
-  parent_id uuid references public.comments(id) on delete cascade,
-  author_name text not null default '匿名' check (char_length(author_name) <= 32),
-  body text not null check (char_length(body) <= 800),
-  approved boolean not null default true,
+  email text not null check (
+    char_length(email) <= 254
+    and email like '%@%.%'
+    and email not like '% %'
+  ),
+  status text not null default 'active' check (status in ('active', 'unsubscribed')),
   created_at timestamptz not null default now()
 );
 
 create index if not exists posts_created_at_idx on public.posts(created_at desc);
-create index if not exists comments_post_id_idx on public.comments(post_id, created_at asc);
-create index if not exists comments_parent_id_idx on public.comments(parent_id);
+create unique index if not exists email_subscribers_email_key on public.email_subscribers(lower(email));
+create index if not exists email_subscribers_created_at_idx on public.email_subscribers(created_at desc);
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -40,37 +41,14 @@ begin
 end;
 $$;
 
-create or replace function public.ensure_comment_parent_matches_post()
-returns trigger
-language plpgsql
-as $$
-begin
-  if new.parent_id is not null and not exists (
-    select 1
-    from public.comments parent
-    where parent.id = new.parent_id
-    and parent.post_id = new.post_id
-  ) then
-    raise exception 'parent comment must belong to the same post';
-  end if;
-
-  return new;
-end;
-$$;
-
 drop trigger if exists posts_set_updated_at on public.posts;
 create trigger posts_set_updated_at
 before update on public.posts
 for each row execute function public.set_updated_at();
 
-drop trigger if exists comments_parent_matches_post on public.comments;
-create trigger comments_parent_matches_post
-before insert or update on public.comments
-for each row execute function public.ensure_comment_parent_matches_post();
-
 alter table public.blog_creators enable row level security;
 alter table public.posts enable row level security;
-alter table public.comments enable row level security;
+alter table public.email_subscribers enable row level security;
 
 drop policy if exists "Creators can read creators" on public.blog_creators;
 create policy "Creators can read creators"
@@ -94,35 +72,21 @@ with check (
   and exists (select 1 from public.blog_creators where user_id = auth.uid())
 );
 
-drop policy if exists "Everyone can read approved comments" on public.comments;
-create policy "Everyone can read approved comments"
-on public.comments for select
+drop policy if exists "Visitors can subscribe by email" on public.email_subscribers;
+create policy "Visitors can subscribe by email"
+on public.email_subscribers for insert
 to anon, authenticated
-using (
-  approved = true
-  and exists (
-    select 1 from public.posts
-    where posts.id = comments.post_id
-    and posts.published = true
-  )
-);
+with check (status = 'active');
 
-drop policy if exists "Visitors can create comments" on public.comments;
-create policy "Visitors can create comments"
-on public.comments for insert
-to anon, authenticated
-with check (
-  approved = true
-  and exists (
-    select 1 from public.posts
-    where posts.id = comments.post_id
-    and posts.published = true
-  )
-);
+drop policy if exists "Creators can read subscribers" on public.email_subscribers;
+create policy "Creators can read subscribers"
+on public.email_subscribers for select
+to authenticated
+using (exists (select 1 from public.blog_creators where user_id = auth.uid()));
 
-drop policy if exists "Creators can manage comments" on public.comments;
-create policy "Creators can manage comments"
-on public.comments for all
+drop policy if exists "Creators can manage subscribers" on public.email_subscribers;
+create policy "Creators can manage subscribers"
+on public.email_subscribers for update
 to authenticated
 using (exists (select 1 from public.blog_creators where user_id = auth.uid()))
 with check (exists (select 1 from public.blog_creators where user_id = auth.uid()));

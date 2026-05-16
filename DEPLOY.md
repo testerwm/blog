@@ -1,6 +1,6 @@
 # Leo's Blog 部署说明
 
-这是一个静态前端 + Supabase 后端的博客。前端部署在 Vercel，文章、评论、创作者登录放在 Supabase。
+这是一个静态前端 + Supabase 后端的博客。前端部署在 Vercel，文章、创作者登录和邮箱订阅放在 Supabase。
 
 ## 本地预览
 
@@ -21,7 +21,7 @@ http://localhost:5173
 推荐：
 
 1. Vercel：部署前端页面。
-2. Supabase：保存文章、评论，并保护创作者后台。
+2. Supabase：保存文章、邮箱订阅，并保护创作者后台。
 
 ## Supabase 设置
 
@@ -43,6 +43,31 @@ window.LEO_BLOG_CONFIG = {
   supabaseUrl: "https://xxxx.supabase.co",
   supabaseAnonKey: "你的 anon public key",
 };
+```
+
+## Resend 邮件通知
+
+Email 订阅地址会保存到 Supabase 的 `email_subscribers` 表。发布文章后，Vercel API 会通过 Resend 给订阅者发送邮件。
+
+需要在 Vercel 项目里添加环境变量：
+
+```text
+RESEND_API_KEY=你的 Resend API Key
+RESEND_FROM_EMAIL=Leo Wang's Blog <onboarding@resend.dev>
+SITE_URL=https://blog-two-hazel-16.vercel.app
+```
+
+如果你已经在 Resend 绑定并验证自己的域名，把 `RESEND_FROM_EMAIL` 改成你的域名邮箱，例如：
+
+```text
+RESEND_FROM_EMAIL=Leo Wang's Blog <hello@yourdomain.com>
+```
+
+本项目也支持可选环境变量：
+
+```text
+SUPABASE_URL=https://ckqryhmuvkeesfeuwytu.supabase.co
+SUPABASE_ANON_KEY=你的 Supabase anon key
 ```
 
 ## Vercel 部署

@@ -3,18 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Leo's Blog 创作者后台</title>
+    <title>Leo Wang's Blog 创作者后台</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-role="creator">
     <header class="site-header">
       <div class="wrap header-inner">
-        <a class="brand" href="index.html" aria-label="返回博客">Leo's Blog</a>
+        <a class="brand" href="index.html" aria-label="返回博客">Leo Wang's Blog</a>
         <nav class="nav" aria-label="后台导航">
-          <a href="index.html">公开页</a>
-          <a href="#editor">发布</a>
+          <a class="nav-pill" href="index.html">公开页</a>
           <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换深浅色主题">暗色</button>
-          <button class="nav-button hidden" id="logoutButton" type="button">退出</button>
+          <button class="nav-pill hidden" id="logoutButton" type="button">退出</button>
         </nav>
       </div>
     </header>
@@ -45,47 +44,8 @@
         </form>
       </section>
 
-      <section class="wrap hero compact-hero creator-only hidden" id="home">
-        <div>
-          <p class="eyebrow">Creator</p>
-          <h1>创作者后台</h1>
-        </div>
-        <p class="hero-copy">这里是作者发布内容的地方，普通访客不需要看到这个页面。</p>
-      </section>
-
-      <section class="wrap layout creator-only hidden">
-        <aside class="post-list-panel" aria-label="文章列表">
-          <div class="panel-head">
-            <h2>文章</h2>
-            <button class="text-button" id="seedButton" type="button">载入示例</button>
-          </div>
-          <div class="post-list" id="postList"></div>
-        </aside>
-
-        <article class="reader" id="reader">
-          <div class="empty-state">
-            <h2>还没有文章</h2>
-            <p>从下方发布第一篇内容。</p>
-          </div>
-        </article>
-      </section>
-
       <section class="wrap editor-section creator-only hidden" id="editor">
-        <div class="section-title">
-          <p class="eyebrow">Publish</p>
-          <h2>发布内容</h2>
-        </div>
-
         <form class="editor-form" id="postForm">
-          <label>
-            <span>标题</span>
-            <input id="postTitle" type="text" maxlength="80" placeholder="写一个清楚的标题" required />
-          </label>
-          <label>
-            <span>摘要</span>
-            <textarea id="postExcerpt" rows="3" maxlength="180" placeholder="用一两句话说明这篇文章"></textarea>
-          </label>
-
           <div class="rich-editor">
             <div class="toolbar" aria-label="富文本工具栏">
               <button type="button" data-command="bold" aria-label="加粗"><strong>B</strong></button>
@@ -94,6 +54,54 @@
               <button type="button" data-command="formatBlock" data-value="blockquote">“”</button>
               <button type="button" data-command="insertUnorderedList">•</button>
               <button type="button" data-command="createLink">链接</button>
+              <select id="fontSizeSelect" aria-label="调整字号">
+                <option value="">字号</option>
+                <option value="14px">小</option>
+                <option value="16px">正文</option>
+                <option value="18px">中</option>
+                <option value="22px">大</option>
+                <option value="28px">特大</option>
+              </select>
+              <button
+                class="swatch"
+                type="button"
+                data-inline-style="color"
+                data-value="#d97706"
+                style="--swatch: #d97706"
+                aria-label="黄色文字"
+              ></button>
+              <button
+                class="swatch"
+                type="button"
+                data-inline-style="color"
+                data-value="#15803d"
+                style="--swatch: #15803d"
+                aria-label="绿色文字"
+              ></button>
+              <button
+                class="swatch"
+                type="button"
+                data-inline-style="color"
+                data-value="#2563eb"
+                style="--swatch: #2563eb"
+                aria-label="蓝色文字"
+              ></button>
+              <button
+                class="swatch"
+                type="button"
+                data-inline-style="color"
+                data-value="#b42318"
+                style="--swatch: #b42318"
+                aria-label="红色文字"
+              ></button>
+              <button
+                class="swatch"
+                type="button"
+                data-inline-style="color"
+                data-value="#25636a"
+                style="--swatch: #25636a"
+                aria-label="青色文字"
+              ></button>
               <button type="button" id="clearFormatButton">清除格式</button>
             </div>
             <div
@@ -113,32 +121,28 @@
           <p class="post-meta" id="publishMessage"></p>
         </form>
       </section>
+
+      <section class="wrap layout creator-only hidden">
+        <aside class="post-list-panel" aria-label="文章列表">
+          <div class="panel-head">
+            <h2>文章</h2>
+            <button class="text-button" id="seedButton" type="button">载入示例</button>
+          </div>
+          <div class="post-list" id="postList"></div>
+        </aside>
+
+        <article class="reader" id="reader">
+          <div class="empty-state">
+            <h2>还没有文章</h2>
+            <p>从上方发布第一篇内容。</p>
+          </div>
+        </article>
+      </section>
     </main>
 
     <footer class="site-footer">
-      <div class="wrap">Leo's Blog · creator console</div>
+      <div class="wrap">Leo Wang's Blog · creator console</div>
     </footer>
-
-    <button class="back-to-top" id="backToTop" type="button" aria-label="回到顶部">↑</button>
-
-    <template id="commentTemplate">
-      <li class="comment">
-        <div class="comment-card">
-          <div class="comment-meta"></div>
-          <p class="comment-body"></p>
-          <button class="reply-button" type="button">回复</button>
-          <form class="reply-form hidden">
-            <input type="text" maxlength="24" placeholder="昵称，可留空匿名" />
-            <textarea rows="3" maxlength="400" placeholder="写下你的回复" required></textarea>
-            <div>
-              <button class="primary-button small" type="submit">提交</button>
-              <button class="ghost-button small cancel-reply" type="button">取消</button>
-            </div>
-          </form>
-        </div>
-        <ol class="comment-children"></ol>
-      </li>
-    </template>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
