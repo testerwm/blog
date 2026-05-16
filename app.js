@@ -15,6 +15,7 @@ const authMessage = document.querySelector("#authMessage");
 const publishMessage = document.querySelector("#publishMessage");
 const logoutButton = document.querySelector("#logoutButton");
 const themeToggle = document.querySelector("#themeToggle");
+const backToTopButton = document.querySelector("#backToTop");
 const creatorOnlyNodes = document.querySelectorAll(".creator-only");
 const isCreator = document.body.dataset.role === "creator";
 const config = window.LEO_BLOG_CONFIG ?? {};
@@ -60,6 +61,19 @@ function stripTags(html) {
   const template = document.createElement("template");
   template.innerHTML = html;
   return template.content.textContent?.trim() ?? "";
+}
+
+function getPostFirstLine(post) {
+  const template = document.createElement("template");
+  template.innerHTML = post.content || "";
+
+  const block = template.content.querySelector("h1, h2, h3, h4, p, li, blockquote, pre, div");
+  const firstLine = (block?.textContent || template.content.textContent || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find(Boolean);
+
+  return firstLine || formatDate(post.createdAt);
 }
 
 function normalizeEditorHTML(html) {
@@ -228,9 +242,8 @@ function renderPostList() {
     const button = document.createElement("button");
     button.className = `post-item${post.id === activePostId ? " active" : ""}`;
     button.type = "button";
-    button.innerHTML = `<strong></strong><span></span>`;
-    button.querySelector("strong").textContent = post.title;
-    button.querySelector("span").textContent = post.excerpt || stripTags(post.content).slice(0, 72);
+    button.innerHTML = `<strong class="post-outline-line"></strong>`;
+    button.querySelector(".post-outline-line").textContent = getPostFirstLine(post);
     button.addEventListener("click", () => {
       activePostId = post.id;
       render();
@@ -544,8 +557,24 @@ function bindAuth() {
   });
 }
 
+function bindBackToTop() {
+  if (!backToTopButton) return;
+
+  const updateVisibility = () => {
+    backToTopButton.classList.toggle("visible", window.scrollY > 360);
+  };
+
+  backToTopButton.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  window.addEventListener("scroll", updateVisibility, { passive: true });
+  updateVisibility();
+}
+
 async function init() {
   initTheme();
+  bindBackToTop();
 
   if (!hasSupabaseConfig || !db) {
     showSetupState();
