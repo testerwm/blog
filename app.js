@@ -112,9 +112,12 @@ function getListTitle(post) {
   return "";
 }
 
-function getPostPreview(post, maxLength = 120) {
-  const preview = post.excerpt || stripTags(post.content) || formatDate(post.createdAt);
-  return preview.length > maxLength ? `${preview.slice(0, maxLength)}...` : preview;
+function getPostOutlineText(post) {
+  const template = document.createElement("template");
+  template.innerHTML = post.content;
+  const firstTextNode = template.content.querySelector("p, h2, blockquote, li, pre, code");
+  const text = (firstTextNode?.textContent || stripTags(post.content) || formatDate(post.createdAt)).trim();
+  return text.split(/\n/).find((line) => line.trim())?.trim() || formatDate(post.createdAt);
 }
 
 function stripTags(html) {
@@ -400,15 +403,8 @@ function renderPostList() {
     button.className = `post-item${post.id === activePostId ? " active" : ""}`;
     button.type = "button";
     button.dataset.postId = post.id;
-    const listTitle = getListTitle(post);
-    button.classList.toggle("untitled", !listTitle);
-    button.innerHTML = listTitle ? `<strong></strong><span></span>` : `<span class="post-preview-only"></span>`;
-    if (listTitle) {
-      button.querySelector("strong").textContent = listTitle;
-      button.querySelector("span").textContent = getPostPreview(post, 72);
-    } else {
-      button.querySelector(".post-preview-only").textContent = getPostPreview(post);
-    }
+    button.innerHTML = `<span></span>`;
+    button.querySelector("span").textContent = getPostOutlineText(post);
     button.addEventListener("click", () => {
       activePostId = post.id;
       renderPostList();
