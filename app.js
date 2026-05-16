@@ -115,9 +115,18 @@ function getListTitle(post) {
 function getPostOutlineText(post) {
   const template = document.createElement("template");
   template.innerHTML = post.content;
-  const firstTextNode = template.content.querySelector("p, h2, blockquote, li, pre, code");
-  const text = (firstTextNode?.textContent || stripTags(post.content) || formatDate(post.createdAt)).trim();
-  return text.split(/\n/).find((line) => line.trim())?.trim() || formatDate(post.createdAt);
+  const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT);
+
+  while (walker.nextNode()) {
+    const line = walker.currentNode.textContent
+      .split(/\n/)
+      .map((item) => item.trim())
+      .find(Boolean);
+
+    if (line) return line;
+  }
+
+  return formatDate(post.createdAt);
 }
 
 function stripTags(html) {
